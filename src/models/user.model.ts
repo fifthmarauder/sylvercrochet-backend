@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
-import { IUser } from '../interfaces/user.interface';
+import { IProduct, IUser } from '../interfaces/user.interface';
+
 
 const userSchema = new Schema<IUser>(
   {
@@ -11,4 +12,17 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
+const newProductSchema = new Schema<IProduct>(
+  {
+    name:{type:String, required:true},
+    images:[{type:String , required:true}],
+    category:{type:String, required:true},
+    stock:{type:Boolean, required:false},
+    description:{type:String, required:true},
+    price:{type:Number, required:true}
+  },
+  { timestamps: true }
+)
+
 export const UserModel = model<IUser>('User', userSchema);
+export const NewProductModel = model<IProduct>('NewProduct', newProductSchema)

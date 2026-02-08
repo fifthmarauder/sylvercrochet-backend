@@ -8,3 +8,15 @@ export interface IUser extends Document {
   updatedAt:Date;
   admin:boolean
 }
+
+export interface IProduct{
+  name:string;
+  images:string[];
+  stock?:boolean;
+  category:string;
+  description:string;
+  price:number;
+  createdAt: Date;
+  updatedAt:Date;
+
+}
