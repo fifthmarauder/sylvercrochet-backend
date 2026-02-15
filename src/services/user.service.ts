@@ -1,8 +1,5 @@
 import { IProduct, IUser } from "../interfaces/user.interface";
 import { NewProductModel, UserModel } from "../models/user.model";
-// export const getAllUsers = async () => {
-//   return users;
-// };
 
 export const createAUser = async (data:IUser) => {
  
@@ -35,6 +32,15 @@ export const getProductStatistics =async()=>{
       inventoryValue
 
     }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getAllProducts =async()=>{
+  try {
+    const products = await NewProductModel.find().sort({createdAt:-1}).select('name category images price')
+    return products
   } catch (error) {
     throw error
   }
