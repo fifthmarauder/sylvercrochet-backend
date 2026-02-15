@@ -1,4 +1,4 @@
-import {  addANewProduct, createAUser } from "../services/user.service";
+import {  addANewProduct, createAUser, getProductStatistics } from "../services/user.service";
 import { Request, Response } from "express";
 
 // export const getUsers = async (req, res) => {
@@ -38,3 +38,15 @@ export const addNewProduct = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getProductStats =async(req: Request, res: Response)=>{
+  try {
+    const stats = await getProductStatistics();
+    res.status(200).json(stats)
+  } catch (error:any) {
+     console.error("Stats fetch error:", error);
+    res.status(500).json({ 
+      message: error.message || "Failed to fetch statistics"
+    });
+  }
+}
