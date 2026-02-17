@@ -45,3 +45,29 @@ export const getAllProducts =async()=>{
     throw error
   }
 }
+
+export const editProduct =async(id:string, data:Partial<IProduct>)=>{
+  try {
+    const updateProduct = await NewProductModel.findByIdAndUpdate(id,data,{new:true, runValidators:true})
+    if(!updateProduct){
+      throw new Error("Product not found")
+    }
+
+    return updateProduct
+  } catch (error) {
+    throw error
+  }
+}
+
+export const deleteProduct = async(id:string)=>{
+  try {
+    const deleteProduct = await NewProductModel.findByIdAndDelete(id)
+    if(!deleteProduct){
+      throw new Error("Product not found")
+    }
+
+    return deleteProduct
+  } catch (error) {
+    throw error
+  }
+}
