@@ -16,7 +16,7 @@ router.get("/stats",getProductStats)
 
 router.get("/adminProducts",getProducts)
 
-router.put("/updateProduct",validate(createNewProductSchema), updateProductController)
+router.put("/updateProduct/:id",validate(createNewProductSchema), updateProductController)
 
-router.delete("/deleteProduct", deleteProductController)
+router.delete("/deleteProduct/:id", deleteProductController)
 export default router;

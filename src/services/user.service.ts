@@ -39,7 +39,7 @@ export const getProductStatistics =async()=>{
 
 export const getAllProducts =async()=>{
   try {
-    const products = await NewProductModel.find().sort({createdAt:-1}).select('name category images price')
+    const products = await NewProductModel.find().sort({createdAt:-1})
     return products
   } catch (error) {
     throw error
