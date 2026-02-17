@@ -1,4 +1,4 @@
-import {  addANewProduct, createAUser, editProduct, getAllProducts, getProductStatistics } from "../services/user.service";
+import {  addANewProduct, createAUser, deleteProduct, editProduct, getAllProducts, getProductStatistics } from "../services/user.service";
 import { Request, Response } from "express";
 
 // export const getUsers = async (req, res) => {
@@ -77,3 +77,15 @@ export const updateProductController = async(req:Request, res:Response)=>{
   }
 }
 
+export const deleteProductController = async(req:Request, res:Response)=>{
+  try {
+    const {id} = req.params
+    await deleteProduct(id)
+    res.status(200).json({message:"Product deleted successfully"})
+  } catch (error:any) {
+    console.log("Product not deleted",error)
+    res.status(500).json({
+      message:error.message || "Failed to delete product"
+    })
+  }
+}

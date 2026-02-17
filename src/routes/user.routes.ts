@@ -1,5 +1,5 @@
 import express from "express";
-import {  addNewProduct, createUser, getProducts, getProductStats } from "../controllers/user.controller";
+import {  addNewProduct, createUser, deleteProductController, getProducts, getProductStats, updateProductController } from "../controllers/user.controller";
 import { validate } from "../middlewares/validate";
 import { createNewProductSchema, createUserSchema } from "../validators/user.validators";
 
@@ -16,4 +16,7 @@ router.get("/stats",getProductStats)
 
 router.get("/adminProducts",getProducts)
 
+router.put("/updateProduct",validate(createNewProductSchema), updateProductController)
+
+router.delete("/deleteProduct", deleteProductController)
 export default router;
