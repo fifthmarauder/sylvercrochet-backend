@@ -1,5 +1,5 @@
 import express from "express";
-import {  addNewProduct, createUser, deleteProductController, getProducts, getProductStats, updateProductController } from "../controllers/user.controller";
+import {  addNewProduct, createUser, deleteProductController, getFeaturedProductsController, getProducts, getProductStats, updateProductController } from "../controllers/user.controller";
 import { validate } from "../middlewares/validate";
 import { createNewProductSchema, createUserSchema } from "../validators/user.validators";
 
@@ -11,6 +11,8 @@ const router = express.Router();
 router.post("/",validate(createUserSchema), createUser);
 
 router.post("/addProduct" , validate(createNewProductSchema), addNewProduct)
+
+router.get("/featured", getFeaturedProductsController);
 
 router.get("/stats",getProductStats)
 

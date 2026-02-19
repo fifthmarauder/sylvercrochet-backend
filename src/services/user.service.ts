@@ -8,6 +8,13 @@ export const createAUser = async (data:IUser) => {
 };
 
 export const addANewProduct = async(data:IProduct) =>{
+   if (data.isFeatured === true) {
+    const featuredCount = await NewProductModel.countDocuments({ isFeatured: true });
+    
+    if (featuredCount >= 3) {
+      throw new Error("Maximum 3 products can be featured. Please unfeature another product first.");
+    }
+  }
   const product = await NewProductModel.create(data);
   return product;
 }
@@ -48,6 +55,18 @@ export const getAllProducts =async()=>{
 
 export const editProduct =async(id:string, data:Partial<IProduct>)=>{
   try {
+
+    if (data.isFeatured === true) {
+      const featuredCount = await NewProductModel.countDocuments({ 
+        isFeatured: true,
+        _id: { $ne: id }  
+      });
+      
+      if (featuredCount >= 3) {
+        throw new Error("Maximum 3 products can be featured. Please unfeature another product first.");
+      }
+    }
+
     const updateProduct = await NewProductModel.findByIdAndUpdate(id,data,{new:true, runValidators:true})
     if(!updateProduct){
       throw new Error("Product not found")
@@ -67,6 +86,15 @@ export const deleteProduct = async(id:string)=>{
     }
 
     return deleteProduct
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getFeaturedProducts =async()=>{
+  try {
+    const getProducts = await NewProductModel.find({isFeatured:"true"}).limit(3).sort({createdAt:-1})
+    return getProducts
   } catch (error) {
     throw error
   }

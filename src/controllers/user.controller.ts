@@ -1,4 +1,4 @@
-import {  addANewProduct, createAUser, deleteProduct, editProduct, getAllProducts, getProductStatistics } from "../services/user.service";
+import {  addANewProduct, createAUser, deleteProduct, editProduct, getAllProducts, getFeaturedProducts, getProductStatistics } from "../services/user.service";
 import { Request, Response } from "express";
 
 // export const getUsers = async (req, res) => {
@@ -86,6 +86,18 @@ export const deleteProductController = async(req:Request, res:Response)=>{
     console.log("Product not deleted",error)
     res.status(500).json({
       message:error.message || "Failed to delete product"
+    })
+  }
+}
+
+export const getFeaturedProductsController =async(req:Request,res:Response)=>{
+  try {
+    const featured =await getFeaturedProducts()
+    res.status(200).json(featured)
+  } catch (error:any) {
+    console.log("Cannot get Featured Products", error)
+    res.status(500).json({
+      message:error.message || "Failed to fetch Products"
     })
   }
 }

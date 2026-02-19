@@ -12,7 +12,8 @@ export interface IUser extends Document {
 export interface IProduct{
   name:string;
   images:string;
-  stock?:number;
+  stock?:boolean;
+  isFeatured?:boolean;
   category:string;
   description:string;
   price:number;

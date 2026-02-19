@@ -17,7 +17,8 @@ const newProductSchema = new Schema<IProduct>(
     name:{type:String, required:true},
     images:{type:String , required:true},
     category:{type:String, required:true},
-    stock: { type: Number, required: false },
+    stock: { type: Boolean, required: false },
+    isFeatured: {type: Boolean, default: false},
     description:{type:String, required:true},
     price:{type:Number, required:true}
   },
