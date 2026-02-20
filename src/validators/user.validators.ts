@@ -17,5 +17,6 @@ export const createNewProductSchema = Joi.object({
   category: Joi.string().required(),
   description:Joi.string().min(5).max(200).required(),
   price: Joi.number().positive().required(),
+  isFeatured: Joi.boolean().optional()
 
 })
