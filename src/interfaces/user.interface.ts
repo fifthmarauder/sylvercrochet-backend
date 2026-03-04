@@ -21,3 +21,34 @@ export interface IProduct{
   updatedAt:Date;
 
 }
+
+export interface IOrderItem{
+  productId:string;
+  name:string;
+  images:string;
+  category:string;
+  price:number;
+  quantity:number;
+}
+
+export interface IOrder extends Document {
+  orderNumber: string;
+  customerInfo: {
+    fullName: string;
+    email: string;
+    contactNo: string;
+  };
+  shippingAddress: {
+    streetAddress: string;
+    city: string;
+    zipCode: string;
+  };
+  items: IOrderItem[];
+  subtotal: number;
+  shippingCost: number;
+  totalAmount: number;
+  modifications?: string;
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  createdAt: Date;
+  updatedAt: Date;
+}

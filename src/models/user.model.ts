@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IProduct, IUser } from '../interfaces/user.interface';
+import { IOrder, IProduct, IUser } from '../interfaces/user.interface';
 
 
 const userSchema = new Schema<IUser>(
@@ -24,6 +24,49 @@ const newProductSchema = new Schema<IProduct>(
   },
   { timestamps: true }
 )
+
+const orderSchema = new Schema<IOrder>(
+  {
+    orderNumber: { 
+      type: String, 
+      required: true, 
+      unique: true 
+    },
+    customerInfo: {
+      fullName: { type: String, required: true },
+      email: { type: String, required: true },
+      contactNo: { type: String, required: true },
+    },
+    shippingAddress: {
+      streetAddress: { type: String, required: true },
+      city: { type: String, required: true },
+      zipCode: { type: String, required: true },
+    },
+    items: [
+      {
+        productId: { type: String, required: true },
+        name: { type: String, required: true },
+        images: { type: String, required: true },
+        category: { type: String, required: true },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true },
+      },
+    ],
+    subtotal: { type: Number, required: true },
+    shippingCost: { type: Number, required: true },
+    totalAmount: { type: Number, required: true },
+    modifications: { type: String, required: false },
+    status: { 
+      type: String, 
+      enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
+      default: 'pending' 
+    },
+  },
+  { timestamps: true }
+);
+
+export const OrderModel = model<IOrder>('Order', orderSchema);
+
 
 export const UserModel = model<IUser>('User', userSchema);
 export const NewProductModel = model<IProduct>('NewProduct', newProductSchema)
