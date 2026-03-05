@@ -1,5 +1,7 @@
-import { IProduct, IUser } from "../interfaces/user.interface";
-import { NewProductModel, UserModel } from "../models/user.model";
+import { getShippingCost } from "../constants/cities";
+import { IOrder, IProduct, IUser } from "../interfaces/user.interface";
+import { NewProductModel, OrderModel, UserModel } from "../models/user.model";
+
 
 export const createAUser = async (data:IUser) => {
  
@@ -99,3 +101,75 @@ export const getFeaturedProducts =async()=>{
     throw error
   }
 }
+
+type CreateOrderData = Omit<IOrder, '_id' | 'orderNumber' | 'shippingCost' | 'totalAmount' | 'status' | 'createdAt' | 'updatedAt'>;
+
+const generateOrderNumber = (): string => {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+  return `ORD-${timestamp}-${random}`;
+};
+
+
+export const createOrder =async(data:CreateOrderData)=>{
+  try {
+    const shippingCost = getShippingCost(data.shippingAddress.city)
+    const totalAmount =data.subtotal + shippingCost
+    const orderNumber = generateOrderNumber();
+
+    const order = await OrderModel.create({
+      orderNumber,
+      customerInfo:data.customerInfo,
+       shippingAddress: data.shippingAddress,
+      items: data.items,
+      subtotal: data.subtotal,
+      shippingCost,
+      totalAmount,
+      modifications: data.modifications || '',
+      status: 'pending',
+    })
+    return order
+  
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getAllOrder =async()=>{
+  try {
+    const orders= await OrderModel.find().sort({createdAt:-1})
+    return orders
+  } catch (error) {
+    throw error
+  }
+}
+
+export const getOrdersById = async(orderId:string)=>{
+try {
+    const order = await OrderModel.findById(orderId);
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    return order;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// export const updateOrderStatus = async (orderId: string, status: string) => {
+//   try {
+//     const order = await OrderModel.findByIdAndUpdate(
+//       orderId,
+//       { status },
+//       { new: true }
+//     );
+    
+//     if (!order) {
+//       throw new Error('Order not found');
+//     }
+    
+//     return order;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
