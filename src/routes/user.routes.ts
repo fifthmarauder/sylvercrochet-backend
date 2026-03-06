@@ -1,7 +1,7 @@
 import express from "express";
-import {  addNewProduct, createUser, deleteProductController, getFeaturedProductsController, getProducts, getProductStats, updateProductController } from "../controllers/user.controller";
+import {  addNewProduct, createOrderController, createUser, deleteProductController, getFeaturedProductsController, getProducts, getProductStats, updateProductController } from "../controllers/user.controller";
 import { validate } from "../middlewares/validate";
-import { createNewProductSchema, createUserSchema } from "../validators/user.validators";
+import { createNewProductSchema, createOrderSchema, createUserSchema } from "../validators/user.validators";
 
 
 
@@ -21,4 +21,6 @@ router.get("/adminProducts",getProducts)
 router.put("/updateProduct/:id",validate(createNewProductSchema), updateProductController)
 
 router.delete("/deleteProduct/:id", deleteProductController)
+
+router.post('/create', validate(createOrderSchema), createOrderController);
 export default router;
