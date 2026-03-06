@@ -66,7 +66,5 @@ const orderSchema = new Schema<IOrder>(
 );
 
 export const OrderModel = model<IOrder>('Order', orderSchema);
-
-
 export const UserModel = model<IUser>('User', userSchema);
 export const NewProductModel = model<IProduct>('NewProduct', newProductSchema)

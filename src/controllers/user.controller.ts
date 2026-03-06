@@ -1,5 +1,6 @@
-import {  addANewProduct, createAUser, deleteProduct, editProduct, getAllProducts, getFeaturedProducts, getProductStatistics } from "../services/user.service";
+import {  addANewProduct, createAUser, createOrder, deleteProduct, editProduct, getAllProducts, getFeaturedProducts, getProductStatistics } from "../services/user.service";
 import { Request, Response } from "express";
+import { sendOrderEmailToAdmin } from "../utils/emailService";
 
 // export const getUsers = async (req, res) => {
 //   const users = await userService.getAllUsers();
@@ -101,3 +102,38 @@ export const getFeaturedProductsController =async(req:Request,res:Response)=>{
     })
   }
 }
+export const createOrderController = async (req: Request, res: Response) => {
+  try {
+    const order = await createOrder(req.body);
+  
+    try {
+      await sendOrderEmailToAdmin({
+        orderNumber: order.orderNumber,
+        customerInfo: order.customerInfo,
+        shippingAddress: order.shippingAddress,
+        items: order.items,
+        subtotal: order.subtotal,
+        shippingCost: order.shippingCost,
+        totalAmount: order.totalAmount,
+        modifications: order.modifications,
+      });
+    } catch (emailError) {
+      console.error('Failed to send email:', emailError);
+    }
+    
+    res.status(201).json({
+      success: true,
+      message: 'Order placed successfully',
+      order: {
+        orderNumber: order.orderNumber,
+        totalAmount: order.totalAmount,
+      },
+    });
+  } catch (error: any) {
+    console.error('Order creation error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Failed to create order',
+    });
+  }
+};
