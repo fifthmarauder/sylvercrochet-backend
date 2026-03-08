@@ -1,6 +1,7 @@
 import {  addANewProduct, createAUser, createOrder, deleteProduct, editProduct, getAllProducts, getFeaturedProducts, getProductStatistics } from "../services/user.service";
 import { Request, Response } from "express";
 import { sendOrderEmailToAdmin } from "../utils/emailService";
+import cloudinary from "../config/cloudinary";
 
 // export const getUsers = async (req, res) => {
 //   const users = await userService.getAllUsers();
@@ -135,5 +136,31 @@ export const createOrderController = async (req: Request, res: Response) => {
       success: false,
       message: error.message || 'Failed to create order',
     });
+  }
+};
+
+
+export const uploadImage = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'products', 
+      allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+      transformation: [
+        { width: 800, height: 800, crop: 'limit' }, 
+      ],
+    });
+
+    res.status(200).json({
+      success: true,
+      url: result.secure_url,
+      public_id: result.public_id,
+    });
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    res.status(500).json({ message: 'Failed to upload image' });
   }
 };

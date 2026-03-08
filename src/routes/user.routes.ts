@@ -1,7 +1,8 @@
 import express from "express";
-import {  addNewProduct, createOrderController, createUser, deleteProductController, getFeaturedProductsController, getProducts, getProductStats, updateProductController } from "../controllers/user.controller";
+import {  addNewProduct, createOrderController, createUser, deleteProductController, getFeaturedProductsController, getProducts, getProductStats, updateProductController, uploadImage } from "../controllers/user.controller";
 import { validate } from "../middlewares/validate";
 import { createNewProductSchema, createOrderSchema, createUserSchema } from "../validators/user.validators";
+import { upload } from "../middlewares/upload";
 
 
 
@@ -23,4 +24,6 @@ router.put("/updateProduct/:id",validate(createNewProductSchema), updateProductC
 router.delete("/deleteProduct/:id", deleteProductController)
 
 router.post('/create', validate(createOrderSchema), createOrderController);
+
+router.post('/image', upload.single('image'), uploadImage);
 export default router;
