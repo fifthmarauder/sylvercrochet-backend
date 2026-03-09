@@ -1,108 +1,134 @@
 import { getShippingCost } from "../constants/cities";
-import { IOrder, IProduct, IUser } from "../interfaces/user.interface";
-import { NewProductModel, OrderModel, UserModel } from "../models/user.model";
+import {
+  ICustomOrder,
+  IOrder,
+  IProduct,
+  IUser,
+} from "../interfaces/user.interface";
+import {
+  CustomOrderModel,
+  NewProductModel,
+  OrderModel,
+  UserModel,
+} from "../models/user.model";
 
-
-export const createAUser = async (data:IUser) => {
- 
+export const createAUser = async (data: IUser) => {
   const user = await UserModel.create(data);
   return user;
 };
 
-export const addANewProduct = async(data:IProduct) =>{
-   if (data.isFeatured === true) {
-    const featuredCount = await NewProductModel.countDocuments({ isFeatured: true });
-    
+export const addANewProduct = async (data: IProduct) => {
+  if (data.isFeatured === true) {
+    const featuredCount = await NewProductModel.countDocuments({
+      isFeatured: true,
+    });
+
     if (featuredCount >= 3) {
-      throw new Error("Maximum 3 products can be featured. Please unfeature another product first.");
+      throw new Error(
+        "Maximum 3 products can be featured. Please unfeature another product first.",
+      );
     }
   }
   const product = await NewProductModel.create(data);
   return product;
-}
+};
 
-export const getProductStatistics =async()=>{
+export const getProductStatistics = async () => {
   try {
-    const  totalProducts = await NewProductModel.countDocuments()
-    const totalStock = await NewProductModel.countDocuments({stock : true})
+    const totalProducts = await NewProductModel.countDocuments();
+    const totalStock = await NewProductModel.countDocuments({ stock: true });
     const inventoryResult = await NewProductModel.aggregate([
       {
-        $group:{
-          _id:null,
-          totalValue : {$sum:"$price"}
-        }
-      }
-    ])
-    const inventoryValue = inventoryResult[0]?.totalValue || 0
+        $group: {
+          _id: null,
+          totalValue: { $sum: "$price" },
+        },
+      },
+    ]);
+    const inventoryValue = inventoryResult[0]?.totalValue || 0;
 
-    return{
+    return {
       totalProducts,
       totalStock,
-      inventoryValue
-
-    }
+      inventoryValue,
+    };
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-export const getAllProducts =async()=>{
+export const getAllProducts = async () => {
   try {
-    const products = await NewProductModel.find().sort({createdAt:-1})
-    return products
+    const products = await NewProductModel.find().sort({ createdAt: -1 });
+    return products;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-export const editProduct =async(id:string, data:Partial<IProduct>)=>{
+export const editProduct = async (id: string, data: Partial<IProduct>) => {
   try {
-
     if (data.isFeatured === true) {
-      const featuredCount = await NewProductModel.countDocuments({ 
+      const featuredCount = await NewProductModel.countDocuments({
         isFeatured: true,
-        _id: { $ne: id }  
+        _id: { $ne: id },
       });
-      
+
       if (featuredCount >= 3) {
-        throw new Error("Maximum 3 products can be featured. Please unfeature another product first.");
+        throw new Error(
+          "Maximum 3 products can be featured. Please unfeature another product first.",
+        );
       }
     }
 
-    const updateProduct = await NewProductModel.findByIdAndUpdate(id,data,{new:true, runValidators:true})
-    if(!updateProduct){
-      throw new Error("Product not found")
+    const updateProduct = await NewProductModel.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updateProduct) {
+      throw new Error("Product not found");
     }
 
-    return updateProduct
+    return updateProduct;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-export const deleteProduct = async(id:string)=>{
+export const deleteProduct = async (id: string) => {
   try {
-    const deleteProduct = await NewProductModel.findByIdAndDelete(id)
-    if(!deleteProduct){
-      throw new Error("Product not found")
+    const deleteProduct = await NewProductModel.findByIdAndDelete(id);
+    if (!deleteProduct) {
+      throw new Error("Product not found");
     }
 
-    return deleteProduct
+    return deleteProduct;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-export const getFeaturedProducts =async()=>{
+export const getFeaturedProducts = async () => {
   try {
-    const getProducts = await NewProductModel.find({isFeatured:"true"}).limit(3).sort({createdAt:-1})
-    return getProducts
+    const getProducts = await NewProductModel.find({ isFeatured: "true" })
+      .limit(3)
+      .sort({ createdAt: -1 });
+    return getProducts;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-type CreateOrderData = Omit<IOrder, '_id' | 'orderNumber' | 'shippingCost' | 'totalAmount' | 'status' | 'createdAt' | 'updatedAt'>;
+type CreateOrderData = Omit<
+  IOrder,
+  | "_id"
+  | "orderNumber"
+  | "shippingCost"
+  | "totalAmount"
+  | "status"
+  | "createdAt"
+  | "updatedAt"
+>;
 
 const generateOrderNumber = (): string => {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -110,28 +136,48 @@ const generateOrderNumber = (): string => {
   return `ORD-${timestamp}-${random}`;
 };
 
-
-export const createOrder =async(data:CreateOrderData)=>{
+export const createOrder = async (data: CreateOrderData) => {
   try {
-    const shippingCost = getShippingCost(data.shippingAddress.city)
-    const totalAmount =data.subtotal + shippingCost
+    const shippingCost = getShippingCost(data.shippingAddress.city);
+    const totalAmount = data.subtotal + shippingCost;
     const orderNumber = generateOrderNumber();
 
     const order = await OrderModel.create({
       orderNumber,
-      customerInfo:data.customerInfo,
-       shippingAddress: data.shippingAddress,
+      customerInfo: data.customerInfo,
+      shippingAddress: data.shippingAddress,
       items: data.items,
       subtotal: data.subtotal,
       shippingCost,
       totalAmount,
-      modifications: data.modifications || '',
-      status: 'pending',
-    })
-    return order
-  
+      modifications: data.modifications || "",
+      status: "pending",
+    });
+    return order;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
+type CreateCustomOrderData = Omit<
+  ICustomOrder,
+  "_id" | "orderNumber" | "status" | "createdAt" | "updatedAt"
+>;
+
+export const createCustomOrder = async (data: CreateCustomOrderData) => {
+  const orderNumber = generateOrderNumber();
+
+  try {
+    const customOrder = await CustomOrderModel.create({
+      orderNumber,
+      customerInfo: data.customerInfo,
+      shippingAddress: data.shippingAddress,
+      description: data.description,
+      referenceImages: data.referenceImages,
+      status: "pending",
+    });
+    return customOrder;
+  } catch (error) {
+    throw error;
+  }
+};
