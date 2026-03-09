@@ -52,3 +52,24 @@ export interface IOrder extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
+
+export interface ICustomOrder extends Document{
+  orderNumber:string;
+    customerInfo: {
+    fullName: string;
+    email: string;
+    contactNo: string;
+  };
+  shippingAddress: {
+    streetAddress: string;
+    city: string;
+    zipCode: string;
+  };
+  referenceImages:string[];
+  description:string
+  status: 'pending' | 'quoted' | 'approved' | 'in-progress' | 'completed' | 'cancelled';
+createdAt: Date;
+  updatedAt: Date;
+}

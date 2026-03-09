@@ -12,7 +12,7 @@ export const createUserSchema = Joi.object({
 
 export const createNewProductSchema = Joi.object({
   name:Joi.string().required(),
-  images: Joi.string().uri().required(),
+  images: Joi.string().required(),
   stock: Joi.boolean().default(true),
   category: Joi.string().required(),
   description:Joi.string().min(5).max(200).required(),
