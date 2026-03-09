@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IOrder, IProduct, IUser } from '../interfaces/user.interface';
+import { ICustomOrder, IOrder, IProduct, IUser } from '../interfaces/user.interface';
 
 
 const userSchema = new Schema<IUser>(
@@ -65,6 +65,31 @@ const orderSchema = new Schema<IOrder>(
   { timestamps: true }
 );
 
+const customOrderSchema = new Schema<ICustomOrder>(
+  {
+    orderNumber:{type:String, required:true, unique:true},
+    customerInfo:{
+      fullName:{type:String, required:true},
+      email:{type:String, required:true},
+      contactNo:{type:String, required:true}
+    },
+     shippingAddress: {
+      streetAddress: { type: String, required: true },
+      city: { type: String, required: true },
+      zipCode: { type: String, required: true },
+    },
+    description:{type:String,required:true},
+    referenceImages:[{type:String, required:true}],
+    status: { 
+      type: String, 
+      enum: ['pending', 'quoted', 'approved', 'in-progress', 'completed', 'cancelled'],
+      default: 'pending' 
+    },
+  },
+  {timestamps:true}
+)
+
 export const OrderModel = model<IOrder>('Order', orderSchema);
 export const UserModel = model<IUser>('User', userSchema);
 export const NewProductModel = model<IProduct>('NewProduct', newProductSchema)
+export const CustomOrderModel =model<ICustomOrder>('CustomOrder',customOrderSchema)
