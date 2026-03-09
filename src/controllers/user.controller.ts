@@ -27,13 +27,6 @@ export const createUser = async (req: Request, res: Response) => {
   res.status(201).json(user);
 };
 
-// export const addNewProduct = async (req:Request, res:Response) =>{
-//   const {data}=req.body;
-//   const newProduct = await addANewProduct(data);
-
-//   res.status(201).json(newProduct)
-// }
-
 export const addNewProduct = async (req: Request, res: Response) => {
   try {
     const newProduct = await addANewProduct(req.body);
