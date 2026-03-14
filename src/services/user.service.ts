@@ -11,6 +11,8 @@ import {
   OrderModel,
   UserModel,
 } from "../models/user.model";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const createAUser = async (data: IUser) => {
   const user = await UserModel.create(data);
@@ -180,4 +182,37 @@ export const createCustomOrder = async (data: CreateCustomOrderData) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const loginUser = async (data: IUser) => {
+  if (!data.email || !data.password) {
+    throw new Error("Missing required fields");
+  }
+
+  const user = await UserModel.findOne({ email: data.email });
+
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
+
+  const isValid = await bcrypt.compare(data.password, user.password);
+
+  if (!isValid) {
+    throw new Error("Invalid credentials");
+  }
+
+  const token = jwt.sign(
+    { userId: user._id, email: user.email },
+    process.env.JWT_SECRET || "your-secret-key",
+    {
+      expiresIn: "7d",
+    },
+  );
+
+  return { token, user: sanitize(user) };
+};
+
+const sanitize = (user: IUser): Omit<IUser, "password"> => {
+  const { password, _id, __v, ...rest } = user.toObject();
+  return { id: _id.toString(), ...rest };
 };

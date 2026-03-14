@@ -1,6 +1,5 @@
 import {
   addANewProduct,
-  createAUser,
   createCustomOrder,
   createOrder,
   deleteProduct,
@@ -8,6 +7,7 @@ import {
   getAllProducts,
   getFeaturedProducts,
   getProductStatistics,
+  loginUser,
 } from "../services/user.service";
 import { Request, Response } from "express";
 import {
@@ -20,12 +20,6 @@ import cloudinary from "../config/cloudinary";
 //   const users = await userService.getAllUsers();
 //   res.json(users);
 // };
-
-export const createUser = async (req: Request, res: Response) => {
-  const user = await createAUser(req.body);
-
-  res.status(201).json(user);
-};
 
 export const addNewProduct = async (req: Request, res: Response) => {
   try {
@@ -197,5 +191,14 @@ export const uploadImage = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Upload error:", error);
     res.status(500).json({ message: "Failed to upload image" });
+  }
+};
+
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const result = await loginUser(req.body);
+    res.json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: (error as Error).message });
   }
 };

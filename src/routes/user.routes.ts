@@ -3,11 +3,11 @@ import {
   addNewProduct,
   createCustomOrderController,
   createOrderController,
-  createUser,
   deleteProductController,
   getFeaturedProductsController,
   getProducts,
   getProductStats,
+  getUser,
   updateProductController,
   uploadImage,
 } from "../controllers/user.controller";
@@ -22,8 +22,7 @@ import { upload } from "../middlewares/upload";
 
 const router = express.Router();
 
-// router.get("/", getUsers);
-router.post("/", validate(createUserSchema), createUser);
+router.post("/login", validate(createUserSchema), getUser);
 
 router.post("/addProduct", validate(createNewProductSchema), addNewProduct);
 
